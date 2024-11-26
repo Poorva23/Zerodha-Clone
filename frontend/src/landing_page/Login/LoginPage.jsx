@@ -1,30 +1,40 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Signup.css'; // Add your styles
+import { Link, useNavigate } from 'react-router-dom'; // Import Link from react-router-dom
+import { useAuth } from './auth'; // Adjust the import path as needed
+import '../signup/Signup.css'; // Import the CSS file
 
-function Signup() {
+
+const Login = () => {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
-  const handleSubmit = (e) => {
+  const { loginUser } = useAuth();
+const navigate = useNavigate(); // Initialize the navigate function
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your signup logic here (API call or form validation)
-    if (username && email && password) {
-      setSuccess('Signup successful!');
+    try {
+      const data = await loginUser(username, password);
+      setSuccess('Login successful!');
       setError(null);
-      // Optionally, navigate to the login page or home page after successful signup
-    } else {
-      setError('Please fill all fields.');
+      setUsername("")
+      setPassword("")
+      // navigate('/'); // Navigating to the main page ("/")
+      // Redirect the user to an external URL after successful login
+      window.location.href = "https://connecticaiot.com/"; // Full-page redirect to external site
+      // window.location.href = "http://localhost:5173/";
+
+    } catch (err) {
+      setError(err.message);
       setSuccess(null);
+      setUsername("")
+      setPassword("")
     }
   };
 
   return (
     <div className="auth-container my-20">
-      <h2>Signup</h2>
+      <h2>Login</h2>
       <form className="auth-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Username:</label>
@@ -33,16 +43,6 @@ function Signup() {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            className='reg'
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -56,16 +56,16 @@ function Signup() {
             required
           />
         </div>
-        <button className="btnn" type="submit">Signup</button>
+        <button className="btnn" type="submit">Login</button>
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
-      </form>
 
+      </form>
       <p className="redirect">
-        Already have an account? <Link to="/Login">Login here</Link>
+        Don't have an account? <Link to="/Signup">Register here</Link>
       </p>
     </div>
   );
-}
+};
 
-export default Signup;
+export default Login;

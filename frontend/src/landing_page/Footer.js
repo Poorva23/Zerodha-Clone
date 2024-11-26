@@ -13,11 +13,11 @@ function Footer() {
           </div>
           <div className="col">
             <p>Company</p>
-            <a href="">About</a>
+            <a href="about">About</a>
             <br />
-            <a href="">Products</a>
+            <a href="product">Products</a>
             <br />
-            <a href="">Pricing</a>
+            <a href="pricing">Pricing</a>
             <br />
             <a href="">Referral programme</a>
             <br />
@@ -34,7 +34,7 @@ function Footer() {
             <p>Support</p>
             <a href="">Contact</a>
             <br />
-            <a href="">Support portal</a>
+            <a href="support">Support portal</a>
             <br />
             <a href="">Z-Connect blog</a>
             <br />
@@ -45,7 +45,7 @@ function Footer() {
           </div>
           <div className="col">
             <p>Account</p>
-            <a href="">Open an account</a>
+            <a href="signup">Open an account</a>
             <br />
             <a href="">Fund transfer</a>
             <br />
