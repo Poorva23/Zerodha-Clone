@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './Signup.css'; // Add your styles
 
 function Signup() {
-  const [username, setUsername] = useState('');
+  const [name, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ function Signup() {
     e.preventDefault();
 
     // Validate that all fields are filled
-    if (!username || !email || !password) {
+    if (!name || !email || !password) {
       setError('Please fill all fields.');
       setSuccess(null);
       return;
@@ -21,12 +21,12 @@ function Signup() {
 
     try {
       // Make a POST request to the backend API
-      const response = await fetch('http://localhost:3002/api/users/signup', {
+      const response = await fetch('http://localhost:3002/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();
@@ -57,7 +57,7 @@ function Signup() {
           <input
             className="reg"
             type="text"
-            value={username}
+            value={name}
             onChange={(e) => setUsername(e.target.value)}
             required
           />

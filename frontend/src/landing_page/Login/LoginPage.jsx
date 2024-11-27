@@ -5,7 +5,7 @@ import '../signup/Signup.css'; // Import the CSS file
 
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [name, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -14,7 +14,7 @@ const navigate = useNavigate(); // Initialize the navigate function
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await loginUser(username, password);
+      const data = await loginUser(name, password);
       setSuccess('Login successful!');
       setError(null);
       setUsername("")
@@ -41,7 +41,7 @@ const navigate = useNavigate(); // Initialize the navigate function
           <input
             className='reg'
             type="text"
-            value={username}
+            value={name}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
