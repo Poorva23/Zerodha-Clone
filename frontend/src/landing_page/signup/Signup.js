@@ -9,15 +9,41 @@ function Signup() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your signup logic here (API call or form validation)
-    if (username && email && password) {
-      setSuccess('Signup successful!');
-      setError(null);
-      // Optionally, navigate to the login page or home page after successful signup
-    } else {
+
+    // Validate that all fields are filled
+    if (!username || !email || !password) {
       setError('Please fill all fields.');
+      setSuccess(null);
+      return;
+    }
+
+    try {
+      // Make a POST request to the backend API
+      const response = await fetch('http://localhost:3002/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      // Check if the response was successful
+      if (response.ok) {
+        setSuccess('Signup successful!');
+        setError(null);
+        // Optionally, redirect to another page or show a success message
+        // For example, you can redirect to the login page:
+        // window.location.href = '/login';
+      } else {
+        setError(data.message || 'Signup failed. Please try again.');
+        setSuccess(null);
+      }
+    } catch (error) {
+      setError('Error connecting to the server.');
       setSuccess(null);
     }
   };
@@ -29,7 +55,7 @@ function Signup() {
         <div className="form-group">
           <label>Username:</label>
           <input
-            className='reg'
+            className="reg"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -39,7 +65,7 @@ function Signup() {
         <div className="form-group">
           <label>Email:</label>
           <input
-            className='reg'
+            className="reg"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -49,7 +75,7 @@ function Signup() {
         <div className="form-group">
           <label>Password:</label>
           <input
-            className='reg'
+            className="reg"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
