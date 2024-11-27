@@ -1,34 +1,57 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import Link from react-router-dom
-import { useAuth } from './auth'; // Adjust the import path as needed
-import '../signup/Signup.css'; // Import the CSS file
-
+import { Link, useNavigate } from 'react-router-dom'; // Import navigation tools
+import '../signup/Signup.css'; // Import CSS file for styling
 
 const Login = () => {
-  const [name, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const { loginUser } = useAuth();
-const navigate = useNavigate(); // Initialize the navigate function
+  const [name, setUsername] = useState(''); // Username state
+  const [password, setPassword] = useState(''); // Password state
+  const [error, setError] = useState(null); // Error message state
+  const [success, setSuccess] = useState(null); // Success message state
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const data = await loginUser(name, password);
-      setSuccess('Login successful!');
-      setError(null);
-      setUsername("")
-      setPassword("")
-      // navigate('/'); // Navigating to the main page ("/")
-      // Redirect the user to an external URL after successful login
-      window.location.href = "https://connecticaiot.com/"; // Full-page redirect to external site
-      // window.location.href = "http://localhost:5173/";
 
+    // Basic validation to ensure username and password aren't empty
+    if (!name || !password) {
+      setError('Please fill in both fields.');
+      setSuccess(null);
+      return;
+    }
+
+    try {
+      // Make a POST request to the backend login API
+      const response = await fetch("http://localhost:3002/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Save the JWT token to localStorage if login is successful
+        localStorage.setItem("token", data.token);
+
+        // Set success message and clear form inputs
+        setSuccess("Login successful!");
+        setError(null);
+        setUsername("");
+        setPassword("");
+
+        // Redirect to the dashboard after successful login
+        navigate("/dashboard");
+      } else {
+        throw new Error(data.message || "Login failed. Please try again.");
+      }
     } catch (err) {
+      // Handle errors such as network failure or invalid credentials
       setError(err.message);
       setSuccess(null);
-      setUsername("")
-      setPassword("")
+      setUsername("");
+      setPassword("");
     }
   };
 
@@ -42,7 +65,7 @@ const navigate = useNavigate(); // Initialize the navigate function
             className='reg'
             type="text"
             value={name}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)} // Update username state
             required
           />
         </div>
@@ -52,17 +75,18 @@ const navigate = useNavigate(); // Initialize the navigate function
             className='reg'
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)} // Update password state
             required
           />
         </div>
         <button className="btnn" type="submit">Login</button>
-        {error && <p className="error">{error}</p>}
-        {success && <p className="success">{success}</p>}
-
+        
+        {error && <p className="error">{error}</p>} {/* Display error message */}
+        {success && <p className="success">{success}</p>} {/* Display success message */}
       </form>
+
       <p className="redirect">
-        Don't have an account? <Link to="/Signup">Register here</Link>
+        Don't have an account? <Link to="/signup">Register here</Link> {/* Link to signup page */}
       </p>
     </div>
   );

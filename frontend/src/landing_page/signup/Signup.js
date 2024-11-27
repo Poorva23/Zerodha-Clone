@@ -1,43 +1,55 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './Signup.css'; // Add your styles
+import './Signup.css';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/apiConfig';
 
 function Signup() {
-  const [name, setUsername] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  //con[success, setSuccess] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate that all fields are filled
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
       setError('Please fill all fields.');
       setSuccess(null);
       return;
     }
 
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError('Please enter a valid email address.');
+      setSuccess(null);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setSuccess(null);
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      // Make a POST request to the backend API
-      const response = await fetch('http://localhost:3002/api/signup', {
+      const response = await fetch(`${API_BASE_URL}/api/signup`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
-      // Check if the response was successful
       if (response.ok) {
         setSuccess('Signup successful!');
         setError(null);
-        // Optionally, redirect to another page or show a success message
-        // For example, you can redirect to the login page:
-        // window.location.href = '/login';
+        navigate('/login');
       } else {
         setError(data.message || 'Signup failed. Please try again.');
         setSuccess(null);
@@ -45,6 +57,8 @@ function Signup() {
     } catch (error) {
       setError('Error connecting to the server.');
       setSuccess(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,7 +71,7 @@ function Signup() {
           <input
             className="reg"
             type="text"
-            value={name}
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
@@ -82,11 +96,12 @@ function Signup() {
             required
           />
         </div>
-        <button className="btnn" type="submit">Signup</button>
+        <button className="btnn" type="submit" disabled={isLoading}>
+          {isLoading ? 'Processing...' : 'Signup'}
+        </button>
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
       </form>
-
       <p className="redirect">
         Already have an account? <Link to="/Login">Login here</Link>
       </p>
