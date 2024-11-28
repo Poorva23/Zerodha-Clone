@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Signup.css';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config/apiConfig';
 
 function Signup() {
@@ -11,7 +11,7 @@ function Signup() {
   const [error, setError] = useState(null);
   //con[success, setSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -49,7 +49,7 @@ function Signup() {
       if (response.ok) {
         setSuccess('Signup successful!');
         setError(null);
-        navigate('/login');
+        //navigate('/login');
       } else {
         setError(data.message || 'Signup failed. Please try again.');
         setSuccess(null);

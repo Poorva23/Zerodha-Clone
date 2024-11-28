@@ -54,6 +54,9 @@ function Navbar() {
                   Support
                 </Link>
               </li>
+              <Link class="nav-link active" aria-current="page" to="/dashboard">
+                  Dashboard
+                </Link>
             </ul>
           </form>
         </div>

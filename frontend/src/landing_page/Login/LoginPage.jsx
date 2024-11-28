@@ -21,7 +21,7 @@ const Login = () => {
 
     try {
       // Make a POST request to the backend login API
-      const response = await fetch("http://localhost:3002/login", {
+      const response = await fetch("http://localhost:3002/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
