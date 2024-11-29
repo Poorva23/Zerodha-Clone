@@ -20,6 +20,23 @@ const uri = process.env.MONGO_URI;
 
 // Middleware
 //app.use(cors());
+
+const authenticate = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error("Error during authentication:", error);
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
 app.use(cors({
   origin: 'http://localhost:3000', // Frontend URL
   methods: ['GET', 'POST'],

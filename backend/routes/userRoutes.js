@@ -43,11 +43,11 @@ router.post("/signup", async (req, res) => {
 
 // Login Route
 router.post("/login", async (req, res) => {
-  const { name, password } = req.body;
+  const { username, password } = req.body;
 
   try {
     // Check if the user exists
-    const user = await User.findOne({ name });
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(400).json({ message: "User not found! Please sign up first." });
     }
@@ -59,15 +59,16 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
       expiresIn: "1h", // Token validity
     });
 
     res.status(200).json({
       message: "Login successful!",
       token,
-      user: { id: user._id, name: user.name, email: user.email },
-    });
+      user: { id: user._id, username: user.username, email: user.email },
+   });
+  //res.status(200).send("Login successful");
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error during login", error: error.message });
