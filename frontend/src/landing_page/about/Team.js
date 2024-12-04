@@ -16,7 +16,7 @@ function Team() {
             src="media/images/nithinKamath.jpg"
             style={{ borderRadius: "100%", width: "50%" }}
           />
-          <h4 className="mt-5">Nithin Kamath</h4>
+          <h4 className="mt-5">nithin Kamath</h4>
           <h6>Founder's, CEO's
           </h6>
         </div>
