@@ -17,7 +17,8 @@ function Team() {
             style={{ borderRadius: "100%", width: "50%" }}
           />
           <h4 className="mt-5">Nithin Kamath</h4>
-          <h6>Founder, CEO</h6>
+          <h6>Founder's, CEO's
+          </h6>
         </div>
         <div className="col-6 p-3">
           <p>
