@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useState, useContext } from "react";
 import axios from "axios";
-
 import GeneralContext from "./GeneralContext";
 
 import "./BuyActionWindow.css";
@@ -10,20 +7,38 @@ import "./BuyActionWindow.css";
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
+  const [loading, setLoading] = useState(false); 
 
-  const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
-      name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "BUY",
-    });
+  const { closeBuyWindow } = useContext(GeneralContext); 
 
-    GeneralContext.closeBuyWindow();
-  };
+  const handleBuyClick = async () => {
+    setLoading(true);  
 
-  const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+    try {
+      const response = await fetch("http://localhost:3002/newOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "NIFTY",
+          qty: stockQuantity,
+          price: stockPrice,
+          mode: "BUY",
+        }),
+      });
+      console.log("Response:", response.body);
+
+      console.log("Order placed successfully:", response.data);
+      alert("Order placed successfully!");
+
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Error placing order, please try again.");
+    }
+
+    setLoading(false); 
+    closeBuyWindow();  // Close the window after placing the order
   };
 
   return (
@@ -38,6 +53,7 @@ const BuyActionWindow = ({ uid }) => {
               id="qty"
               onChange={(e) => setStockQuantity(e.target.value)}
               value={stockQuantity}
+              min="1" // Prevents negative quantities
             />
           </fieldset>
           <fieldset>
@@ -49,6 +65,7 @@ const BuyActionWindow = ({ uid }) => {
               step="0.05"
               onChange={(e) => setStockPrice(e.target.value)}
               value={stockPrice}
+              min="0" // Prevents negative price
             />
           </fieldset>
         </div>
@@ -57,12 +74,16 @@ const BuyActionWindow = ({ uid }) => {
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          <button
+            className="btn btn-blue"
+            onClick={handleBuyClick}
+            disabled={loading} // Disable button when request is loading
+          >
+            {loading ? "Placing Order..." : "Buy"}
+          </button>
+          <button className="btn btn-grey" onClick={closeBuyWindow}>
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>

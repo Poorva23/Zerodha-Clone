@@ -1,11 +1,11 @@
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const jwt = require("jsonwebtoken"); // Import jsonwebtoken
 
 const connectDB = require('./config/db');
 
@@ -19,28 +19,10 @@ const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URI;
 
 // Middleware
-//app.use(cors());
-
-const authenticate = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    console.error("Error during authentication:", error);
-    res.status(401).json({ message: "Invalid token" });
-  }
-};
-
 app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
+  origin: 'http://localhost:3000', 
   methods: ['GET', 'POST'],
-  credentials: true // Allow cookies if needed
+  credentials: true
 }));
 
 app.use(bodyParser.json());
@@ -52,11 +34,26 @@ app.use(
   })
 );
 
+// Authentication Middleware
+const authenticate = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use process.env.JWT_SECRET
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error("Error during authentication:", error);
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
 
 app.use('/api', userRoutes);
-// Routes
-// app.use("/api/users", userRoutes); // Add the user routes
 
+// Routes
 app.get("/", (req, res) => {
   res.send("Welcome to the Zerodha Clone API!");
 });
@@ -79,17 +76,30 @@ app.get("/allPositions", async (req, res) => {
   }
 });
 
+
 app.post("/newOrder", async (req, res) => {
+  const { name, qty, price, mode } = req.body;
+  if (!name || !qty || !price || !mode) {
+    return res.status(400).json({ message: "Missing required fields: name, qty, price, mode" });
+  }
+
   try {
-    let newOrder = new OrdersModel(req.body);
+    let newOrder = new OrdersModel({
+      userName: name,
+      quantity: qty,
+      price: price,
+      mode: mode,
+      date: new Date(),
+    });
     await newOrder.save();
     res.status(201).send("Order saved!");
   } catch (error) {
+    console.error("Error saving order:", error);
     res.status(500).json({ message: "Error saving order", error: error.message });
   }
 });
 
-// MongoDB Connection
+
 mongoose
   .connect(uri)
   .then(() => console.log("Connected to MongoDB"))
@@ -98,18 +108,14 @@ mongoose
     process.exit(1);
   });
 
-// Graceful Shutdown
+
 process.on("SIGINT", async () => {
   console.log("Closing MongoDB connection...");
   await mongoose.connection.close();
   process.exit(0);
 });
 
-// Start Server
-// app.listen(PORT, () => {
-//   console.log(`App running on http://localhost:${PORT}`);
-// });
-app.listen(3002, () => {
-  console.log('Server is running on http://localhost:3002');
-});
 
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
