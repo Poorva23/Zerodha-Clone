@@ -1,24 +1,31 @@
 import React, { useState } from "react";
-
 import BuyActionWindow from "./BuyActionWindow";
 
 const GeneralContext = React.createContext({
-  openBuyWindow: (uid) => {},
+  openBuyWindow: (stock) => {},
   closeBuyWindow: () => {},
+  addOrder: (order) => {},
+  orders: [],
 });
 
 export const GeneralContextProvider = (props) => {
   const [isBuyWindowOpen, setIsBuyWindowOpen] = useState(false);
-  const [selectedStockUID, setSelectedStockUID] = useState("");
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [orders, setOrders] = useState([]);
 
-  const handleOpenBuyWindow = (uid) => {
+  const handleOpenBuyWindow = (stock) => {
     setIsBuyWindowOpen(true);
-    setSelectedStockUID(uid);
+    setSelectedStock(stock);
   };
 
   const handleCloseBuyWindow = () => {
     setIsBuyWindowOpen(false);
-    setSelectedStockUID("");
+    setSelectedStock(null);
+  };
+
+  const handleAddOrder = (order) => {
+    setOrders((prevOrders) => [...prevOrders, { ...order, id: prevOrders.length + 1 }]);
+    handleCloseBuyWindow();
   };
 
   return (
@@ -26,10 +33,14 @@ export const GeneralContextProvider = (props) => {
       value={{
         openBuyWindow: handleOpenBuyWindow,
         closeBuyWindow: handleCloseBuyWindow,
+        addOrder: handleAddOrder,
+        orders: orders,
       }}
     >
       {props.children}
-      {isBuyWindowOpen && <BuyActionWindow uid={selectedStockUID} />}
+      {isBuyWindowOpen && selectedStock && (
+        <BuyActionWindow stock={selectedStock} closeWindow={handleCloseBuyWindow} addOrder={handleAddOrder} />
+      )}
     </GeneralContext.Provider>
   );
 };
