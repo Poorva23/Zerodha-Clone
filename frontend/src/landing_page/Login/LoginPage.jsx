@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import navigation tools
-import '../signup/Signup.css'; // Import CSS file for styling
+
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../signup/Signup.css";
+import "./LoginPage.css";
 
 const Login = () => {
   const [username, setUsername] = useState(''); // Username state

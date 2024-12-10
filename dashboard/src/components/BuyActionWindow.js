@@ -1,25 +1,33 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
+
 import "./BuyActionWindow.css";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
-  const { closeBuyWindow } = useContext(GeneralContext);
+  const { closeBuyWindow } = useContext(GeneralContext); 
 
   const handleBuyClick = async () => {
-    setLoading(true);
+    setLoading(true);  
 
     try {
-      const response = await axios.post("http://localhost:3002/newOrder", {
-        name: "NIFTY",  // You can replace this with a dynamic stock name
-        qty: stockQuantity,
-        price: stockPrice,
-        mode: "BUY",
+      const response = await fetch("http://localhost:3002/newOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "NIFTY",
+          qty: stockQuantity,
+          price: stockPrice,
+          mode: "BUY",
+        }),
       });
+      console.log("Response:", response.body);
 
       console.log("Order placed successfully:", response.data);
       alert("Order placed successfully!");
@@ -29,54 +37,58 @@ const BuyActionWindow = ({ uid }) => {
       alert("Error placing order, please try again.");
     }
 
-    setLoading(false);
+    setLoading(false); 
     closeBuyWindow();  // Close the window after placing the order
   };
 
   return (
-    <div className="container" id="buy-window" draggable="true">
-      <div className="regular-order">
-        <div className="inputs">
-          <fieldset>
-            <legend>Qty.</legend>
-            <input
-              type="number"
-              name="qty"
-              id="qty"
-              onChange={(e) => setStockQuantity(e.target.value)}
-              value={stockQuantity}
-              min="1" // Prevents negative quantities
-            />
-          </fieldset>
-          <fieldset>
-            <legend>Price</legend>
-            <input
-              type="number"
-              name="price"
-              id="price"
-              step="0.05"
-              onChange={(e) => setStockPrice(e.target.value)}
-              value={stockPrice}
-              min="0" // Prevents negative price
-            />
-          </fieldset>
-        </div>
-      </div>
-
-      <div className="buttons">
-        <span>Margin required ₹140.65</span>
-        <div>
-          <button
-            className="btn btn-blue"
-            onClick={handleBuyClick}
-            disabled={loading} // Disable button when request is loading
-          >
-            {loading ? "Placing Order..." : "Buy"}
-          </button>
-          <button className="btn btn-grey" onClick={closeBuyWindow}>
-            Cancel
-          </button>
-        </div>
+    <div className="buy-action-window">
+      <h3>{isBuy ? "Buy" : "Sell"} {stock.name}</h3>
+      <table className="form-table">
+        <tbody>
+          <tr>
+            <td><label>Quantity:</label></td>
+            <td>
+              <input
+                type="number"
+                value={quantity}
+                min="0"
+                onChange={(e) => setQuantity(Math.max(0, Number(e.target.value)))}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label>Price:</label></td>
+            <td>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label>Action:</label></td>
+            <td>
+              <button
+                onClick={() => setIsBuy(true)}
+                className={isBuy ? "active" : ""}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setIsBuy(false)}
+                className={!isBuy ? "active" : ""}
+              >
+                Sell
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="action-buttons">
+        <button onClick={handleSubmit}>Confirm</button>
+        <button onClick={closeWindow}>Cancel</button>
       </div>
     </div>
   );
