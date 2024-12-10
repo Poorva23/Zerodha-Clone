@@ -1,33 +1,25 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
-
 import "./BuyActionWindow.css";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
-  const { closeBuyWindow } = useContext(GeneralContext); 
+  const { closeBuyWindow } = useContext(GeneralContext);
 
   const handleBuyClick = async () => {
-    setLoading(true);  
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3002/newOrder", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: "NIFTY",
-          qty: stockQuantity,
-          price: stockPrice,
-          mode: "BUY",
-        }),
+      const response = await axios.post("http://localhost:3002/newOrder", {
+        name: "NIFTY",  // You can replace this with a dynamic stock name
+        qty: stockQuantity,
+        price: stockPrice,
+        mode: "BUY",
       });
-      console.log("Response:", response.body);
 
       console.log("Order placed successfully:", response.data);
       alert("Order placed successfully!");
@@ -37,7 +29,7 @@ const BuyActionWindow = ({ uid }) => {
       alert("Error placing order, please try again.");
     }
 
-    setLoading(false); 
+    setLoading(false);
     closeBuyWindow();  // Close the window after placing the order
   };
 
