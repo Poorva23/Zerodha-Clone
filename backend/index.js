@@ -79,40 +79,88 @@ app.get("/allPositions", async (req, res) => {
 });
 
 // Create a new order
-app.post("/newOrder", async (req, res) => {
-  const { name, qty, price, mode } = req.body;
-  
-  // Ensure all required fields are present
-  if (!name || !qty || !price || !mode) {
-    return res.status(400).json({ message: "Missing required fields: name, qty, price, mode" });
+app.post("/newOrder", authenticate, async (req, res) => {
+  const { name, stockName, qty, price, mode } = req.body;
+
+  if (!name || !qty || !price || !mode || !stockName) {
+    return res.status(400).json({ message: "Missing required fields: name, qty, price, mode, stockName" });
   }
 
+  if (qty <= 0 || price <= 0) {
+    return res.status(400).json({ message: "Quantity and price must be greater than zero." });
+  }
+
+  const session = await mongoose.startSession(); // Start a session for transaction
+  session.startTransaction();
+
   try {
+    if (mode === 'sell') {
+      // Check if the user has enough stock to sell
+      const userHoldings = await HoldingsModel.findOne({ userName: name, stockName: stockName });
+
+      if (!userHoldings) {
+        return res.status(400).json({ message: `No holdings found for ${stockName}` });
+      }
+
+      // Check if the user is trying to sell more than they have
+      if (userHoldings.quantity < qty) {
+        return res.status(400).json({ message: `You can only sell up to ${userHoldings.quantity} stocks of ${stockName}.` });
+      }
+    }
+
     // Create a new order and save it to the database
     let newOrder = new OrdersModel({
       userName: name,
+      stockName: stockName,
       quantity: qty,
       price: price,
-      mode: mode, // 'buy' or 'sell'
+      mode: mode,  // 'buy' or 'sell'
       date: new Date(),
       totalCost: qty * price, // Calculate total cost
     });
 
     await newOrder.save();
+
+    if (mode === 'buy') {
+      // If it's a buy order, update holdings
+      let existingHolding = await HoldingsModel.findOne({ userName: name, stockName: stockName });
+
+      if (existingHolding) {
+        // Update the quantity and total value of the stock
+        existingHolding.quantity += qty;
+        existingHolding.totalValue = existingHolding.quantity * existingHolding.averagePrice;
+        await existingHolding.save();
+      } else {
+        // Create new holdings entry if the stock doesn't exist in holdings
+        let newHolding = new HoldingsModel({
+          userName: name,
+          stockName: stockName,
+          quantity: qty,
+          averagePrice: price,
+          currentPrice: price,  // Initial price is the current buy price
+          totalValue: qty * price,
+        });
+        await newHolding.save();
+      }
+    } else if (mode === 'sell') {
+      // If it's a sell order, update holdings
+      let existingHolding = await HoldingsModel.findOne({ userName: name, stockName: stockName });
+
+      if (existingHolding) {
+        existingHolding.quantity -= qty;
+        existingHolding.totalValue = existingHolding.quantity * existingHolding.averagePrice;
+        if (existingHolding.quantity === 0) {
+          await HoldingsModel.deleteOne({ userName: name, stockName: stockName });
+        } else {
+          await existingHolding.save();
+        }
+      }
+    }
+
     res.status(201).json({ message: "Order saved!" });
   } catch (error) {
     console.error("Error saving order:", error);
     res.status(500).json({ message: "Error saving order", error: error.message });
-  }
-});
-
-// Get all orders
-app.get("/allOrders", async (req, res) => {
-  try {
-    const orders = await OrdersModel.find({});
-    res.json(orders);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching orders", error: error.message });
   }
 });
 

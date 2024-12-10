@@ -22,21 +22,52 @@ const BuyActionWindow = ({ stock, closeWindow, addOrder }) => {
   return (
     <div className="buy-action-window">
       <h3>{isBuy ? "Buy" : "Sell"} {stock.name}</h3>
-      <div>
-        <label>Quantity:</label>
-        <input type="number" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
+      <table className="form-table">
+        <tbody>
+          <tr>
+            <td><label>Quantity:</label></td>
+            <td>
+              <input
+                type="number"
+                value={quantity}
+                min="0"
+                onChange={(e) => setQuantity(Math.max(0, Number(e.target.value)))}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label>Price:</label></td>
+            <td>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label>Action:</label></td>
+            <td>
+              <button
+                onClick={() => setIsBuy(true)}
+                className={isBuy ? "active" : ""}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setIsBuy(false)}
+                className={!isBuy ? "active" : ""}
+              >
+                Sell
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="action-buttons">
+        <button onClick={handleSubmit}>Confirm</button>
+        <button onClick={closeWindow}>Cancel</button>
       </div>
-      <div>
-        <label>Price:</label>
-        <input type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
-      </div>
-      <div>
-        <label>Action:</label>
-        <button onClick={() => setIsBuy(true)} className={isBuy ? "active" : ""}>Buy</button>
-        <button onClick={() => setIsBuy(false)} className={!isBuy ? "active" : ""}>Sell</button>
-      </div>
-      <button onClick={handleSubmit}>Confirm</button>
-      <button onClick={closeWindow}>Cancel</button>
     </div>
   );
 };

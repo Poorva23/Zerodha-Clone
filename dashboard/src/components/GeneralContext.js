@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import BuyActionWindow from "./BuyActionWindow";
+import "./styles.css";
 
 const GeneralContext = React.createContext({
   openBuyWindow: (stock) => {},

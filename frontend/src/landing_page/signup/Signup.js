@@ -1,36 +1,33 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Signup.css';
-//import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../../config/apiConfig';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./Signup.css";
+import { API_BASE_URL } from "../../config/apiConfig";
 
 function Signup() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  //con[success, setSuccess] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  //const navigate = useNavigate();
   const [success, setSuccess] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !email || !password) {
-      setError('Please fill all fields.');
+      setError("Please fill all fields.");
       setSuccess(null);
       return;
     }
 
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError('Please enter a valid email address.');
+      setError("Please enter a valid email address.");
       setSuccess(null);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError("Password must be at least 6 characters long.");
       setSuccess(null);
       return;
     }
@@ -39,23 +36,22 @@ function Signup() {
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Signup successful!');
+        setSuccess("Signup successful!");
         setError(null);
-        //navigate('/login');
       } else {
-        setError(data.message || 'Signup failed. Please try again.');
+        setError(data.message || "Signup failed. Please try again.");
         setSuccess(null);
       }
     } catch (error) {
-      setError('Error connecting to the server.');
+      setError("Error connecting to the server.");
       setSuccess(null);
     } finally {
       setIsLoading(false);
@@ -97,13 +93,13 @@ function Signup() {
           />
         </div>
         <button className="btnn" type="submit" disabled={isLoading}>
-          {isLoading ? 'Processing...' : 'Signup'}
+          {isLoading ? "Processing..." : "Signup"}
         </button>
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
       </form>
       <p className="redirect">
-        Already have an account? <Link to="/Login">Login here</Link>
+        Already have an account? <Link to="/login">Login here</Link>
       </p>
     </div>
   );
