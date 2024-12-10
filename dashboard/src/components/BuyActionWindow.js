@@ -1,72 +1,69 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-const BuyActionWindow = ({ stock, closeWindow, addOrder }) => {
-  const [quantity, setQuantity] = useState(0);
-  const [price, setPrice] = useState(stock.price);
-  const [isBuy, setIsBuy] = useState(true); // Default to Buy action
+import axios from "axios";
 
-  const handleSubmit = () => {
-    const order = {
-      stockName: stock.name,
-      pricePerStock: price,
-      quantityBought: isBuy ? quantity : 0,
-      quantitySold: isBuy ? 0 : quantity,
-      totalBought: isBuy ? quantity * price : 0,
-      totalSold: isBuy ? 0 : quantity * price,
-      totalCost: quantity * price,
-    };
-    addOrder(order); // Add order globally
-    closeWindow(); // Close the buy/sell window
+import GeneralContext from "./GeneralContext";
+
+import "./BuyActionWindow.css";
+
+const BuyActionWindow = ({ uid }) => {
+  const [stockQuantity, setStockQuantity] = useState(1);
+  const [stockPrice, setStockPrice] = useState(0.0);
+
+  const handleBuyClick = () => {
+    axios.post("http://localhost:3002/newOrder", {
+      name: uid,
+      qty: stockQuantity,
+      price: stockPrice,
+      mode: "BUY",
+    });
+
+    GeneralContext.closeBuyWindow();
+  };
+
+  const handleCancelClick = () => {
+    GeneralContext.closeBuyWindow();
   };
 
   return (
-    <div className="buy-action-window">
-      <h3>{isBuy ? "Buy" : "Sell"} {stock.name}</h3>
-      <table className="form-table">
-        <tbody>
-          <tr>
-            <td><label>Quantity:</label></td>
-            <td>
-              <input
-                type="number"
-                value={quantity}
-                min="0"
-                onChange={(e) => setQuantity(Math.max(0, Number(e.target.value)))}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td><label>Price:</label></td>
-            <td>
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td><label>Action:</label></td>
-            <td>
-              <button
-                onClick={() => setIsBuy(true)}
-                className={isBuy ? "active" : ""}
-              >
-                Buy
-              </button>
-              <button
-                onClick={() => setIsBuy(false)}
-                className={!isBuy ? "active" : ""}
-              >
-                Sell
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div className="action-buttons">
-        <button onClick={handleSubmit}>Confirm</button>
-        <button onClick={closeWindow}>Cancel</button>
+    <div className="container" id="buy-window" draggable="true">
+      <div className="regular-order">
+        <div className="inputs">
+          <fieldset>
+            <legend>Qty.</legend>
+            <input
+              type="number"
+              name="qty"
+              id="qty"
+              onChange={(e) => setStockQuantity(e.target.value)}
+              value={stockQuantity}
+            />
+          </fieldset>
+          <fieldset>
+            <legend>Price</legend>
+            <input
+              type="number"
+              name="price"
+              id="price"
+              step="0.05"
+              onChange={(e) => setStockPrice(e.target.value)}
+              value={stockPrice}
+            />
+          </fieldset>
+        </div>
+      </div>
+
+      <div className="buttons">
+        <span>Margin required ₹140.65</span>
+        <div>
+          <Link className="btn btn-blue" onClick={handleBuyClick}>
+            Buy
+          </Link>
+          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+            Cancel
+          </Link>
+        </div>
       </div>
     </div>
   );
