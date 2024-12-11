@@ -11,15 +11,28 @@ const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
 
-  const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
-      name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode: "BUY",
-    });
+  const handleBuyClick = async () => {
+    try {
+      console.log(`Order Details: User ID: ${uid}, Quantity: ${stockQuantity}, Price: ${stockPrice}`);
+      
+      const response = await axios.post("http://localhost:3002/newOrder", {
+        user: uid,
+        qty: stockQuantity,
+        price: stockPrice,
+        mode: "BUY",
+      });
 
-    GeneralContext.closeBuyWindow();
+      console.log("Order Response:", response.data);
+      
+      // Uncomment if you want to close the buy window
+      // GeneralContext.closeBuyWindow();
+
+      alert("Order placed successfully!");
+    } catch (error) {
+      console.error("Error placing order:", error);
+      
+      alert("Failed to place order. Please try again.");
+    }
   };
 
   const handleCancelClick = () => {
