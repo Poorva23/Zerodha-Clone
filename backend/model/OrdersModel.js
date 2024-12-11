@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const ordersSchema = new mongoose.Schema({
   userName: String,
   stockName: String,
-  quantity: Number,
-  price: Number,
+  quantity: String,
+  price: String,
   mode: String, // "buy" or "sell"
   date: Date,
-  totalCost: Number, // Total cost of the transaction (quantity * price)
+  totalCost: String, // Total cost of the transaction (quantity * price)
 });
 
 const OrdersModel = mongoose.model("Orders", ordersSchema);

@@ -113,24 +113,37 @@ app.get("/allPositions", async (req, res) => {
 
 
 app.post("/newOrder", async (req, res) => {
-  const { name, qty, price, mode } = req.body;
-  if (!name || !qty || !price || !mode) {
-    return res.status(400).json({ message: "Missing required fields: name, qty, price, mode" });
-  }
+  const { user, qty, price, mode } = req.body;
+ 
+  // Validate and extract username
+  const userName = typeof user === 'object' && user.name 
+    ? user.name 
+    : user;
 
+  // Check if userName is a valid string
+  if (!userName || !qty || !price || !mode) {
+    return res.status(400).json({
+      message: "Missing required fields: user, qty, price, mode"
+    });
+  }
+  
   try {
     let newOrder = new OrdersModel({
-      userName: name,
+      userName: userName, // Use the extracted username
       quantity: qty,
       price: price,
       mode: mode,
       date: new Date(),
     });
+   
     await newOrder.save();
-    res.status(201).send("Order saved!");
+    res.status(201).json({ message: "Order saved successfully!" });
   } catch (error) {
     console.error("Error saving order:", error);
-    res.status(500).json({ message: "Error saving order", error: error.message });
+    res.status(500).json({
+      message: "Error saving order",
+      error: error.message
+    });
   }
 });
 
