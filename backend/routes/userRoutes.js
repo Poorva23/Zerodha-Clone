@@ -82,7 +82,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../model/User");
-const { HoldingsModel } = require("../models/holdings"); // Import the Holdings model
+const { HoldingsModel } = require("../model/HoldingsModel"); // Import the Holdings model
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key"; // Use a secure key for JWT
@@ -138,6 +138,8 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
       expiresIn: "1h", // Token validity
     });
+
+    console.log("success");
 
     res.status(200).json({
       message: "Login successful!",

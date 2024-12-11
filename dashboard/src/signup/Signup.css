@@ -1,0 +1,98 @@
+
+  
+  .auth-container {
+    max-width: 400px;
+    
+    margin:0 auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin-bottom: 15px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .labell {
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .reg {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .reg:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .btnn {
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btnn:hover {
+    background-color: #0056b3;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .success {
+    color: green;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .redirect {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .redirect a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .redirect a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 600px) {
+    .auth-container {
+      padding: 1rem;
+    }
+  
+    .req, .btnn {
+      font-size: 0.875rem;
+      padding: 0.5rem;
+    }
+  }
+  

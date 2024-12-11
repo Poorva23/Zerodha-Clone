@@ -16,11 +16,12 @@ const { OrdersModel } = require("./model/OrdersModel");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
-const uri = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI || "mongodb://localhost:27017/zerodha_clone";
+const JWT_SECRET = process.env.JWT_SECRET || "This is secret key";
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', 
+  origin: '*', 
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -42,7 +43,7 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use process.env.JWT_SECRET
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -50,6 +51,40 @@ const authenticate = async (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+const checkAuthenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    req.user = decoded;
+    
+    next();
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: "Token expired" });
+    }
+    
+    console.error("Error during authentication:", error);
+    return res.status(500).json({ message: "Authentication error" });
+  }
+};
+
+app.get('/authcheck', checkAuthenticate, (req, res) => {
+  res.status(200).json({ 
+    message: "Authorized", 
+    user: req.user 
+  });
+});
 
 app.use('/api', userRoutes);
 

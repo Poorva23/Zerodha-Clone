@@ -98,10 +98,12 @@ function Navbar() {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <form class="d-flex" role="search">
             <ul class="navbar-nav mb-lg-0">
-              <li class="nav-item">
-                <Link class="nav-link active" aria-current="page" to="/signup">
+              <li className="nav-item">
+                <a 
+                style={{ cursor: "pointer" }}
+                className="nav-link active" onClick={() => window.location.href = "http://localhost:3001/signup"}>
                   Signup
-                </Link>
+                </a>
               </li>
               <li class="nav-item">
               <Link class="nav-link active" aria-current="page" to="/about">
@@ -124,12 +126,12 @@ function Navbar() {
                 </Link>
               </li>
               <li className="nav-item">
-  <a 
-  style={{ cursor: "pointer" }}
-  className="nav-link active" onClick={() => window.location.href = "http://localhost:3001/dashboard"}>
-    Dashboard
-  </a>
-</li>
+                <a 
+                style={{ cursor: "pointer" }}
+                className="nav-link active" onClick={() => window.location.href = "http://localhost:3001/dashboard"}>
+                  Dashboard
+                </a>
+              </li>
             </ul>
           </form>
         </div>
