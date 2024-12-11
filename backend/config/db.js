@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect('mongodb://localhost:27017/zerodha_clone', {
+        await mongoose.connect('mongodb://localhost:27017/Zerodha_Clone', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

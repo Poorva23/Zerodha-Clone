@@ -16,7 +16,7 @@ const { OrdersModel } = require("./model/OrdersModel");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
-const uri = process.env.MONGO_URI || "mongodb://localhost:27017/zerodha_clone";
+const uri = process.env.MONGO_URI || "mongodb://localhost:27017/Zerodha_Clone";
 const JWT_SECRET = process.env.JWT_SECRET || "This is secret key";
 
 // Middleware
